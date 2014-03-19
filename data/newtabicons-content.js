@@ -10,13 +10,30 @@
 
 /*global self:false */
 
-"use strict";
+'use strict';
 
-function overrideToggle() {
-  self.port.on('showPrefUpdated', function (e) {
-    // updateThumbnails();
-  });
+const LAYOUT = [
+  8, 7, 6,
+  5, 4, 3,
+  2, 1, 0
+];
+
+function switchThumbnails() {
+  var rows = document.querySelectorAll('.newtab-row');
+  var cells = document.querySelectorAll('.newtab-cell');
+  console.log(rows.length + ' rows.  ' + cells.length + ' cells.');
+  var i = 0;
+  for (let cell of cells) {
+    cell.remove();
+    cell.setAttribute('data', '' + i);
+    i++;
+  }
+  var layout = LAYOUT.slice()
+  for (let row of rows) {
+    row.appendChild(cells[layout.shift()]);
+    row.appendChild(cells[layout.shift()]);
+    row.appendChild(cells[layout.shift()]);
+  }
 }
 
-// addThumbnails(window.document.getElementsByClassName('newtab-cell'));
-overrideToggle();
+switchThumbnails();
