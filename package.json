@@ -1,12 +1,5 @@
 {
   "preferences": [
-    {
-      "name": "register",
-      "title": "Register",
-      "description": "Register your copy of tile switcher today!",
-      "type": "string",
-      "value": ""
-    }
   ],
   "permissions": {
     "private-browsing": true
@@ -19,7 +12,7 @@
   "bugs": {},
   "amd": {},
   "repository": {},
-  "version": "0.0.0",
+  "version": "1.0.0",
   "contributors": [],
   "id": "jid1-tile-switcher",
   "fullName": "tile switcher",
