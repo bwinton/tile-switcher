@@ -12,28 +12,39 @@
 
 'use strict';
 
-const LAYOUT = [
-  8, 7, 6,
-  5, 4, 3,
-  2, 1, 0
-];
+var previousShowing = 0;
 
 function switchThumbnails() {
-  var rows = document.querySelectorAll('.newtab-row');
   var cells = document.querySelectorAll('.newtab-cell');
-  console.log(rows.length + ' rows.  ' + cells.length + ' cells.');
+  console.log('Switching ' + cells.length + ' cells.');
+
+  if (cells.length === 0) {
+    return;
+  }
+
+  var parent = cells[0].parentNode;
+
   var i = 0;
-  for (let cell of cells) {
+  var showing = 0;
+  var cell;
+  for (cell of cells) {
+    var testCell = document.elementFromPoint(cell.offsetLeft, cell.offsetTop);
+    console.log('Classname at ' + cell.offsetLeft + 'x' + cell.offsetTop + ' = ' + testCell.className);
+    // console.log(testCell.outerHTML);
+    if (testCell.className === 'newtab-cell' || testCell.className === 'newtab-thumbnail') {
+      showing++;
+    }
     cell.remove();
-    cell.setAttribute('data', '' + i);
+    cell.setAttribute('originalPosition', '' + i);
     i++;
   }
-  var layout = LAYOUT.slice()
-  for (let row of rows) {
-    row.appendChild(cells[layout.shift()]);
-    row.appendChild(cells[layout.shift()]);
-    row.appendChild(cells[layout.shift()]);
+  console.log('Showing = ' + showing);
+  for (cell of cells) {
+    parent.insertBefore(cell, parent.firstChild);
   }
 }
+
+addEventListener('load', switchThumbnails);
+addEventListener('resize', switchThumbnails);
 
 switchThumbnails();
