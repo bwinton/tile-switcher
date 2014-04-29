@@ -12,35 +12,94 @@
 
 'use strict';
 
-var previousShowing = 0;
+const LAYOUT = [
+  8, 7, 6,
+  5, 4, 3,
+  2, 1, 0
+];
+
+var previousShowing = -1;
+var orderedCells = [];
+
+function newSwitchThumbnails(rows, cells) {
+  var parent = cells[0].parentNode;
+
+  var showing = 0;
+  var i = 0;
+  for (let cell of cells) {
+    if (previousShowing === -1) {
+      // First time through…
+      cell.setAttribute('originalPosition', '' + i);
+      orderedCells.push(cell);
+    }
+
+    let testCell = document.elementFromPoint(cell.offsetLeft + 1, cell.offsetTop + 1);
+    let className = 'null';
+    if (testCell) {
+      className = testCell.className;
+    }
+    if (className === 'newtab-cell' || className === 'newtab-thumbnail') {
+      showing++;
+    }
+    i++;
+  }
+
+  if (showing === previousShowing) {
+    return;
+  }
+
+  // console.log('Switching ' + showing + ' of ' + cells.length + ' cells.');
+
+  // Re-order everything.
+  for (let cell of cells) {
+    cell.remove();
+  }
+  for (let i = 0; i < showing; i++) {
+    parent.insertBefore(orderedCells[i], parent.firstChild);
+  }
+  for (let i = showing; i < orderedCells.length; i++) {
+    parent.appendChild(orderedCells[i]);
+  }
+
+  previousShowing = showing;
+}
+
+
+function oldSwitchThumbnails(rows, cells) {
+  if (previousShowing !== -1) {
+    return;
+  }
+
+  var i = 0;
+  for (let cell of cells) {
+    cell.setAttribute('originalPosition', '' + i);
+  }
+
+  // console.log(rows.length + ' rows. ' + cells.length + ' cells.');
+  for (let cell of cells) {
+    cell.remove();
+  }
+  var layout = LAYOUT.slice()
+  for (let row of rows) {
+    row.appendChild(cells[layout.shift()]);
+    row.appendChild(cells[layout.shift()]);
+    row.appendChild(cells[layout.shift()]);
+  }
+  previousShowing = 0;
+}
 
 function switchThumbnails() {
+  var rows = document.querySelectorAll('.newtab-row');
   var cells = document.querySelectorAll('.newtab-cell');
-  console.log('Switching ' + cells.length + ' cells.');
 
   if (cells.length === 0) {
     return;
   }
 
-  var parent = cells[0].parentNode;
-
-  var i = 0;
-  var showing = 0;
-  var cell;
-  for (cell of cells) {
-    var testCell = document.elementFromPoint(cell.offsetLeft, cell.offsetTop);
-    console.log('Classname at ' + cell.offsetLeft + 'x' + cell.offsetTop + ' = ' + testCell.className);
-    // console.log(testCell.outerHTML);
-    if (testCell.className === 'newtab-cell' || testCell.className === 'newtab-thumbnail') {
-      showing++;
-    }
-    cell.remove();
-    cell.setAttribute('originalPosition', '' + i);
-    i++;
-  }
-  console.log('Showing = ' + showing);
-  for (cell of cells) {
-    parent.insertBefore(cell, parent.firstChild);
+  if (rows.length === 0) {
+    newSwitchThumbnails(rows, cells);
+  } else {
+    oldSwitchThumbnails(rows, cells);
   }
 }
 
